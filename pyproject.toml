@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lithophane-generator-api"
+version = "0.1.0"
+description = "A robust lithophane generator API."
+requires-python = ">=3.10"
+dependencies = [
+    "opencv-python>=4.8.0.76",
+    "numpy>=1.24.0",
+    "numpy-stl>=3.0.0",
+    "fastapi>=0.100.0"
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra -q"
