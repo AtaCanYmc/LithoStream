@@ -1,11 +1,12 @@
+import os
+import uuid
+
 import cv2
 import numpy as np
 from stl import mesh
-import uuid
-import os
 
-from src.core.logging import logger
 from src.core.config import get_settings
+from src.core.logging import logger
 
 settings = get_settings()
 

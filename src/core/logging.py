@@ -1,6 +1,7 @@
 import logging
 import sys
 
+
 def setup_logging():
     logging.basicConfig(
         level=logging.INFO,
@@ -11,5 +12,6 @@ def setup_logging():
     )
     logger = logging.getLogger("lithophane_api")
     return logger
+
 
 logger = setup_logging()

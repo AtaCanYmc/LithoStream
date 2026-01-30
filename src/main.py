@@ -1,20 +1,27 @@
+from contextlib import asynccontextmanager
+from threading import Timer
+
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-from src.core.config import get_settings
-from src.core.logging import logger
+
 from src.api.stl_controller import stl_router
+from src.core.config import get_settings
 from src.core.exceptions import global_exception_handler
+from src.core.logging import logger
+from src.utils.common_utils import open_browser
 
 settings = get_settings()
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    logger.info("Application starting up...")
+    logger.info(f"{app} Application starting up...")
     yield
     # Shutdown
     logger.info("Application shutting down...")
+
 
 def create_application() -> FastAPI:
     application = FastAPI(
@@ -42,8 +49,9 @@ def create_application() -> FastAPI:
 
     return application
 
+
 app = create_application()
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("src.main:app", host="0.0.0.0", port=8000, reload=True)
+    Timer(2, open_browser, args=(settings.HOST, settings.PORT)).start()
+    uvicorn.run("src.main:app", host=settings.HOST, port=settings.PORT, reload=True)

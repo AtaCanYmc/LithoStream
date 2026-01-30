@@ -1,15 +1,20 @@
-from fastapi import APIRouter, UploadFile, File, Form, BackgroundTasks, HTTPException
-from fastapi.responses import FileResponse
-from src.services.stl_service import process_image_to_stl
 import os
 
+from fastapi import APIRouter, BackgroundTasks, File, Form, HTTPException, UploadFile
+from fastapi.responses import FileResponse
+
+from src.core.logging import logger
+from src.services.stl_service import process_image_to_stl
+
 stl_router = APIRouter(prefix="/stl", tags=["stl"])
+
 
 def remove_file(path: str):
     try:
         os.remove(path)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error(e)
+
 
 @stl_router.post("/generate")
 async def generate_lithophane(
@@ -33,7 +38,7 @@ async def generate_lithophane(
         )
         # Clean up file after sending
         background_tasks.add_task(remove_file, stl_path)
-        
+
         file_name = file.filename.rsplit('.', 1)[0]
         return FileResponse(stl_path, media_type="application/octet-stream", filename=f"{file_name}.stl")
     except Exception as e:
