@@ -21,7 +21,7 @@ def test_stl_generation():
     img_bytes = img_encoded.tobytes()
 
     response = client.post(
-        "/api/v1/stl/generate",
+        "/api/v1/stl/flat",
         files={"file": ("test.jpg", img_bytes, "image/jpeg")},
         data={
             "border": 5,

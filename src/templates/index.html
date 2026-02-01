@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LithoStream - Image to STL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
+    <h1 class="text-2xl font-bold mb-6 text-center text-indigo-600">LithoStream Converter</h1>
+
+    <form id="lithoForm" class="space-y-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Select Image</label>
+            <input type="file" id="file" name="file" accept="image/*" required
+                   class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs text-gray-500">Width (m)</label>
+                <input type="number" name="width_cm" value="100.0" step="0.1" class="w-full border rounded p-2">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">Height (mm)</label>
+                <input type="number" name="height_cm" value="150.0" step="0.1" class="w-full border rounded p-2">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">Border (mm)</label>
+                <input type="number" name="border" value="10.0" class="w-full border rounded p-2">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-500">Max Thick (mm)</label>
+                <input type="number" name="max_thickness" value="3.0" step="0.1" class="w-full border rounded p-2">
+            </div>
+        </div>
+
+        <button type="submit" id="submitBtn"
+                class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-200">
+            Generate & Download STL
+        </button>
+    </form>
+
+    <div id="status" class="mt-4 text-center text-sm text-gray-600 hidden">Processing... Please wait.</div>
+</div>
+
+<script>
+    document.getElementById('lithoForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const status = document.getElementById('status');
+
+        btn.disabled = true;
+        status.classList.remove('hidden');
+
+        const formData = new FormData(e.target);
+
+        try {
+            const response = await fetch('/api/v1/stl/flat', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "lithophane.stl";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } else {
+                alert("An error occurred during conversion.");
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            btn.disabled = false;
+            status.classList.add('hidden');
+        }
+    };
+</script>
+</body>
+</html>
